@@ -88,7 +88,6 @@ class RiotProfileManager {
     if (!player) throw new Error('Joueur non trouvé');
 
     return {
-      // Identifiants
       discordId: player.discordId,
       riotId: player.riotId,
       gameName: player.gameName,
@@ -102,10 +101,8 @@ class RiotProfileManager {
       // Coût (système de points)
       pointValue: player.pointValue,
       
-      // Poste préféré
       preferredRole: player.preferredRole,
       
-      // Statistiques
       stats: {
         kdaAverage: player.stats.kdaAverage,
         winrate: player.stats.winrate,
@@ -114,10 +111,8 @@ class RiotProfileManager {
         losses: player.stats.losses
       },
       
-      // Champion Pool (Top 5)
       championPool: player.championPool,
       
-      // Casier judiciaire (Avertissements)
       judiciary: {
         warnings: player.judiciary.warnings,
         suspensions: player.judiciary.suspensions,
