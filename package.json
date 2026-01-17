@@ -1,0 +1,27 @@
+{
+  "name": "lan_creator",
+  "version": "2.0.0",
+  "description": "",
+  "main": "src/bot.js",
+  "scripts": {
+    "dev": "node ."
+  },
+  "author": "Nikho311#4940",
+  "license": "MIT",
+  "dependencies": {
+    "@discordjs/rest": "^1.0.0",
+    "axios": "^1.13.2",
+    "canvas": "^3.1.0",
+    "chalk": "^4.1.2",
+    "crypto": "^1.0.1",
+    "dayjs": "^1.11.5",
+    "discord-api-types": "^0.37.120",
+    "discord.js": "^14.25.1",
+    "dotenv": "^16.0.2",
+    "http": "^0.0.1-security",
+    "mongoose": "^8.19.4",
+    "ms": "^2.1.3",
+    "node-fetch": "^2.6.1",
+    "querystring": "^0.2.1"
+  }
+}
