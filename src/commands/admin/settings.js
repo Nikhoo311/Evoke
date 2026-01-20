@@ -1,5 +1,7 @@
 const { MessageFlags, SlashCommandBuilder, SectionBuilder, TextDisplayBuilder, ButtonBuilder, ButtonStyle, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ContainerBuilder, ActionRowBuilder, SeparatorBuilder, SeparatorSpacingSize } = require("discord.js");
 const { color } = require("../../../config/config.json");
+const path = require("path");
+const { readFileSync } = require("fs");
 
 module.exports = {
     name: "settings",
@@ -10,8 +12,19 @@ module.exports = {
         .setDescription('Permet de configurer les différents paramètres du bot'),
 
     async execute(interaction, client) {
+        const gameFile = JSON.parse(readFileSync(path.join(__dirname, "../../../config/games.json"), "utf-8"));
         const { configs } = client;
-        const gamesInConfigs = [...new Set(configs.map(c => c.game))];
+        const uniqueGames = [...new Set(configs.map(c => c.game))];
+
+        const gamesInConfigs = uniqueGames.map(gameName => {
+            const gameFromFile = gameFile.find(g => g.name === gameName);
+
+            return {
+                name: gameName,
+                emoji: gameFromFile?.emoji ?? "🎮"
+            };
+        });
+        
 
         const restoreBtn = new ButtonBuilder()
             .setCustomId("btn-restore-config")
@@ -29,12 +42,12 @@ module.exports = {
             .setMinValues(1)
             .setMaxValues(1)
             .setPlaceholder("Choisir un jeu...")
-            .setRequired(true)
-            .setOptions(gamesInConfigs.map(gameName => {
+            .setOptions(gamesInConfigs.map(game => {
                 return new StringSelectMenuOptionBuilder()
-                    .setLabel(gameName)
-                    .setValue(gameName)
-                    .setDescription(`Voir les configurations pour ${gameName}`)
+                    .setLabel(game.name)
+                    .setValue(game.name)
+                    .setEmoji(game.emoji)
+                    .setDescription(`Voir les configurations pour ${game.name}`)
             }))
         
         const separator = new SeparatorBuilder().setSpacing(SeparatorSpacingSize.Large)

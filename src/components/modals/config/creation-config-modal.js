@@ -1,10 +1,13 @@
 const ConfigModel = require("../../../schemas/config");
 const { TextDisplayBuilder, ContainerBuilder, SeparatorBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, SeparatorSpacingSize, SectionBuilder, ButtonBuilder, ComponentType, ActionRow, ButtonComponent } = require("discord.js");
+const path = require("path");
+const { readFileSync } = require("fs");
 
 module.exports = {
   data: { name: "creation-config-modal" },
 
   async execute(interaction, client) {
+    const gameFile = JSON.parse(readFileSync(path.join(__dirname, "../../../../config/games.json"), "utf-8"));
     const { configs } = client;
 
     const configName = interaction.fields.getTextInputValue("config_name");
@@ -30,9 +33,14 @@ module.exports = {
 
     configs.set(newConfig.name, newConfig);
 
-    const gamesInConfigs = [
-      ...new Set(configs.map(c => c.game).filter(game => typeof game === "string" && game.length > 0))
-    ];
+    const uniqueGames = [...new Set(configs.map(c => c.game))];
+    const gamesInConfigs = uniqueGames.map(gameName => {
+        const gameFromFile = gameFile.find(g => g.name === gameName);
+        return {
+            name: gameName,
+            emoji: gameFromFile?.emoji ?? "🎮"
+        };
+    })
 
     const selectSettingsGame = new StringSelectMenuBuilder()
       .setCustomId("select-settings-game")
@@ -40,14 +48,13 @@ module.exports = {
       .setMinValues(1)
       .setMaxValues(1)
       .setRequired(true)
-      .setOptions(
-        gamesInConfigs.map(gameName =>
-          new StringSelectMenuOptionBuilder()
-            .setLabel(gameName)
-            .setValue(gameName)
-            .setDescription(`Voir les configurations pour ${gameName}`)
-        )
-      );
+      .setOptions(gamesInConfigs.map(game => {
+        return new StringSelectMenuOptionBuilder()
+            .setLabel(game.name)
+            .setValue(game.name)
+            .setEmoji(game.emoji)
+            .setDescription(`Voir les configurations pour ${game.name}`)
+      }))
 
     const selectRow = new ActionRowBuilder().addComponents(selectSettingsGame);
 

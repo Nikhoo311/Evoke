@@ -32,6 +32,7 @@ module.exports = {
                 return new StringSelectMenuOptionBuilder()
                     .setLabel(game.name)
                     .setValue(game.name)
+                    .setEmoji(game.emoji ?? "🎮")
             }))
 
         const selectLabel = new LabelBuilder()
