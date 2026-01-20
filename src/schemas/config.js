@@ -18,6 +18,8 @@ const ConfigSchema = new mongoose.Schema({
       { name: "aide et questions", active: true, alwaysActive: true },
     ]
   }
+}, {
+  timestamps: true
 });
 
 module.exports = mongoose.model("config", ConfigSchema);

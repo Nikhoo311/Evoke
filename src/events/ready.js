@@ -29,7 +29,7 @@ module.exports = {
             console.error(error);
         }
         const configs = await ConfigModel.find();
-        configs.map(config => client.configs.set(config.name, config));
+        configs.map(config => client.configs.set(config._id.toString(), config));
 
         logger.clientStart(`${client.user.tag} est en ligne !`)
     }

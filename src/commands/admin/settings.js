@@ -59,7 +59,7 @@ module.exports = {
             .setEmoji("➕")
 
         const supprConfigBtn = new ButtonBuilder()
-            .setCustomId("suppr-config-btn")
+            .setCustomId("btn-suppr-config")
             .setLabel("Supprimer")
             .setStyle(ButtonStyle.Danger)
             .setEmoji("<:trash:1462294387881935031>")

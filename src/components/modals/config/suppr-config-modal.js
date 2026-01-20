@@ -1,17 +1,16 @@
 const ConfigModel = require("../../../schemas/config");
-const { TextDisplayBuilder, ContainerBuilder, SeparatorBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, SeparatorSpacingSize, SectionBuilder, ButtonBuilder, ComponentType, ActionRow, ButtonComponent } = require("discord.js");
+const { TextDisplayBuilder, ContainerBuilder, SeparatorBuilder, StringSelectMenuBuilder, StringSelectMenuOptionBuilder, ActionRowBuilder, SeparatorSpacingSize, SectionBuilder, ButtonBuilder, ComponentType, ActionRow, ButtonComponent, MessageFlags } = require("discord.js");
 const path = require("path");
 const { readFileSync } = require("fs");
 
 module.exports = {
-  data: { name: "creation-config-modal" },
+  data: { name: "suppr-config-modal" },
 
   async execute(interaction, client) {
     const gameFile = JSON.parse(readFileSync(path.join(__dirname, "../../../../config/games.json"), "utf-8"));
     const { configs } = client;
 
-    const configName = interaction.fields.getTextInputValue("config_name");
-    const gameSelected = interaction.fields.getStringSelectValues("select_game_name")[0];
+    const configIds = interaction.fields.getStringSelectValues("select_configs_ids");
 
     const oldContainer = interaction.message.components[0];
     const firstSection = new SectionBuilder()
@@ -26,12 +25,28 @@ module.exports = {
         .addSectionComponents(firstSection)
         .addSeparatorComponents(separator)
 
-    const newConfig = await ConfigModel.create({
-      name: configName,
-      game: gameSelected
-    });
+    let names = [];
+    try {
+        // Suppression de toutes les configs dont le name est dans selectedNames
+        const result = await ConfigModel.deleteMany({ _id: { $in: configIds } });
+        if (result.deletedCount === 0) {
+            return interaction.update({
+                content: "⚠️ Aucune configuration trouvée à supprimer.",
+                embeds: [],
+                components: [],
+                flags: [MessageFlags.Ephemeral]
+            });
+        }
 
-    configs.set(newConfig._id.toString(), newConfig);
+        configIds.forEach(id => {
+            const conf = configs.get(id);
+            names.push(conf.name);
+            configs.delete(id);
+        });
+    } catch (error) {
+        console.error(error);
+        interaction.reply({ content: "❌ Une erreur est survenue lors de la suppression des configurations !", flags: [MessageFlags.Ephemeral] });
+    }
 
     const uniqueGames = [...new Set(configs.map(c => c.game))];
     const gamesInConfigs = uniqueGames.map(gameName => {
@@ -56,12 +71,14 @@ module.exports = {
             .setDescription(`Voir les configurations pour ${game.name}`)
       }))
 
-    const selectRow = new ActionRowBuilder().addComponents(selectSettingsGame);
+    if (configs.size > 0) {
+        const selectRow = new ActionRowBuilder().addComponents(selectSettingsGame);
+        container.addActionRowComponents(selectRow).addSeparatorComponents(separator);
+    }
 
-    container.addActionRowComponents(selectRow).addSeparatorComponents(separator);
     container.addTextDisplayComponents(new TextDisplayBuilder({content: buttons[0].data.content}))
     container.addActionRowComponents(ActionRowBuilder.from(buttons[1]))
-    container.addSeparatorComponents(separator).addTextDisplayComponents(new TextDisplayBuilder({ content: `✅ La configuration \`${configName}\` est créée avec succès !` }));
+    container.addSeparatorComponents(separator).addTextDisplayComponents(new TextDisplayBuilder({ content: `✅ ${configIds > 1 ? "Les" : "La"} configuration${configIds > 1 ? "s" : ""} ${names.map(n => `\`${n}\``).join(', ')} ${configIds > 1 ? "ont" : "a"} été suppimée${configIds > 1 ? "s" : ""} avec succès !` }));
     
     return interaction.update({ components: [container] });
   }
