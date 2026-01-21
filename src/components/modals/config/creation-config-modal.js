@@ -61,7 +61,7 @@ module.exports = {
     container.addActionRowComponents(selectRow).addSeparatorComponents(separator);
     container.addTextDisplayComponents(new TextDisplayBuilder({content: buttons[0].data.content}))
     container.addActionRowComponents(ActionRowBuilder.from(buttons[1]))
-    container.addSeparatorComponents(separator).addTextDisplayComponents(new TextDisplayBuilder({ content: `✅ La configuration \`${configName}\` est créée avec succès !` }));
+    container.addSeparatorComponents(separator).addTextDisplayComponents(new TextDisplayBuilder({ content: `✅ La configuration \`${configName}\` est créée avec succès !\n* Pour modifier les salons créer lors de la création d'une saison, cliquez sur la sélection pour consulter l'ensemble de configurations sur un jeu spécifique.\n* Les salons ${newConfig.channels.map(ch => `**${ch.name}**`).join(", ")} ont été créés par défaut.` }));
     
     return interaction.update({ components: [container] });
   }
