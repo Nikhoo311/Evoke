@@ -6,6 +6,7 @@ module.exports = {
         name: "select-info-config"
     },
     async execute(interaction, client) {
+        // ajouter un bouton pour modifier le nom de la configuration + jeu
         const { configs } = client;
         const currentConfig = configs.get(interaction.values[0]);
 
@@ -15,7 +16,7 @@ module.exports = {
                 const lockEmoji = ch.alwaysActive ? " 🔒" : "";
                 const statusEmoji = ch.active ? "<:switch_enabled:1462293151610830900>" : "<:switch_disabled:1462293239145959496>"
                 const channelType = ch.type === "text" ? "<:channel:1462295158388429017>" : "<:channel_voice:1463730529663844543>"
-                return `### ${statusEmoji} ${channelType} ${ch.name} ${lockEmoji}`;
+                return `### ${statusEmoji} ${channelType} ${ch.name.trim().replace(/\s+/g, "-")} ${lockEmoji}`;
             })
             .join("\n")
         const oldContainer = interaction.message.components[0];
@@ -47,6 +48,12 @@ module.exports = {
             .setLabel("Supprimer la configuration")
             .setStyle(ButtonStyle.Danger)
             .setEmoji("<:trash:1462294387881935031>")
+        
+        const editConfigBtn = new ButtonBuilder()
+            .setCustomId("btn-edit-config")
+            .setLabel("Modifier")
+            .setStyle(ButtonStyle.Secondary)
+            .setEmoji("📝")
 
         const container = new ContainerBuilder()
             .setAccentColor(oldContainer.data.accent_color)
@@ -54,8 +61,8 @@ module.exports = {
             .addSeparatorComponents(separator)
             .addTextDisplayComponents(channelsTextDisplay)
             .addSeparatorComponents(separator)
-            .addTextDisplayComponents(new TextDisplayBuilder({ content: `Cet espace est dédié à la **création** et **suppression** des différents salons de la configuration.` }))
-            .addActionRowComponents(new ActionRowBuilder().addComponents(createChannel, supprChannelBtn))
+            .addTextDisplayComponents(new TextDisplayBuilder({ content: `**Modifier** ici le nom et le jeu de la configuration, et administrez les salons associés (**création** et **suppression**).` }).setId(1000))
+            .addActionRowComponents(new ActionRowBuilder().setId(1001).addComponents(editConfigBtn, createChannel, supprChannelBtn))
         
         const supprConfigContainer = new ContainerBuilder()
             .setAccentColor(parseInt(color.red.replace("#", ""), 16))
