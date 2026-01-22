@@ -1,4 +1,5 @@
-const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ButtonBuilder, SectionBuilder } = require("discord.js");
+const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ButtonBuilder, SectionBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
+const { color } = require("../../../../config/config.json");
 
 module.exports = {
     data: {
@@ -28,11 +29,39 @@ module.exports = {
             .setButtonAccessory(ButtonBuilder.from(oldContainer.components[0].accessory.data));
             
         const channelsTextDisplay = new TextDisplayBuilder({ content: text });
+
+        const createChannel = new ButtonBuilder()
+            .setCustomId("btn-create-config-channel")
+            .setLabel("Créer un salon")
+            .setEmoji("<:channel:1462295158388429017>")
+            .setStyle(ButtonStyle.Secondary);
+        
+        const supprChannelBtn = new ButtonBuilder()
+            .setCustomId("btn-suppr-channel")
+            .setLabel("Supprimer un salon")
+            .setStyle(ButtonStyle.Danger)
+            .setEmoji("<:trash:1462294387881935031>")
+        
+        const supprConfigBtn = new ButtonBuilder()
+            .setCustomId("btn-suppr-config")
+            .setLabel("Supprimer la configuration")
+            .setStyle(ButtonStyle.Danger)
+            .setEmoji("<:trash:1462294387881935031>")
+
         const container = new ContainerBuilder()
             .setAccentColor(oldContainer.data.accent_color)
             .addSectionComponents(firstSection)
             .addSeparatorComponents(separator)
             .addTextDisplayComponents(channelsTextDisplay)
-        return await interaction.update({ components: [container] });
+            .addSeparatorComponents(separator)
+            .addTextDisplayComponents(new TextDisplayBuilder({ content: `Cet espace est dédié à la **création** et **suppression** des différents salons de la configuration.` }))
+            .addActionRowComponents(new ActionRowBuilder().addComponents(createChannel, supprChannelBtn))
+        
+        const supprConfigContainer = new ContainerBuilder()
+            .setAccentColor(parseInt(color.red.replace("#", ""), 16))
+            .addTextDisplayComponents(new TextDisplayBuilder({content: `Vous pouvez ici, **supprimer** la configuration \`${currentConfig.name}\` du jeu **${currentConfig.game}**.\n\n⚠️ __Attention :__ Cette action est irréversible une fois la procédure de suppression confirmée.`}))
+            .addActionRowComponents(new ActionRowBuilder().addComponents(supprConfigBtn))
+        
+        return await interaction.update({ components: [container, supprConfigContainer] });
     }
 }
