@@ -75,6 +75,9 @@ module.exports = {
 
         container.addTextDisplayComponents(new TextDisplayBuilder({content: `Cet espace est dédié à la **création** et **suppression** des différentes configurations.`}));
         container.addActionRowComponents(new ActionRowBuilder().addComponents(creationConfigBtn, supprConfigBtn))
+        
+        client.previousPannel = container;
+
         return interaction.reply({ components: [container], flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2] })
     }
 }
