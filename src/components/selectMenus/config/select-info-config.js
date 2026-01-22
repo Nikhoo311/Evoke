@@ -44,7 +44,7 @@ module.exports = {
             .setEmoji("<:trash:1462294387881935031>")
         
         const supprConfigBtn = new ButtonBuilder()
-            .setCustomId("btn-suppr-config")
+            .setCustomId("btn-suppr-this-config")
             .setLabel("Supprimer la configuration")
             .setStyle(ButtonStyle.Danger)
             .setEmoji("<:trash:1462294387881935031>")
@@ -69,6 +69,6 @@ module.exports = {
             .addTextDisplayComponents(new TextDisplayBuilder({content: `Vous pouvez ici, **supprimer** la configuration \`${currentConfig.name}\` du jeu **${currentConfig.game}**.\n\n⚠️ __Attention :__ Cette action est irréversible une fois la procédure de suppression confirmée.`}))
             .addActionRowComponents(new ActionRowBuilder().addComponents(supprConfigBtn))
         
-        return await interaction.update({ components: [container, supprConfigContainer] });
+        return await interaction.update({ components: [new TextDisplayBuilder({content: `-# ${currentConfig._id.toString()}`}), container, supprConfigContainer] });
     }
 }
