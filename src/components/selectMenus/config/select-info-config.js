@@ -13,7 +13,8 @@ module.exports = {
             .map(ch => {
                 const lockEmoji = ch.alwaysActive ? " 🔒" : "";
                 const statusEmoji = ch.active ? "<:switch_enabled:1462293151610830900>" : "<:switch_disabled:1462293239145959496>"
-                return `### ${statusEmoji} <:channel:1462295158388429017> ${ch.name}${lockEmoji}`;
+                const channelType = ch.type === "text" ? "<:channel:1462295158388429017>" : "<:channel_voice:1463730529663844543>"
+                return `### ${statusEmoji} ${channelType} ${ch.name} ${lockEmoji}`;
             })
             .join("\n")
         const oldContainer = interaction.message.components[0];
