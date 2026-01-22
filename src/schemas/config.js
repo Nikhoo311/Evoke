@@ -2,6 +2,7 @@ const mongoose = require("mongoose");
 
 const ChannelSchema = new mongoose.Schema({
   name: { type: String, required: true },
+  type: { type: String, enum: ["text", "voice"], default: "text" },
   active: { type: Boolean, required: true, default: false },
   alwaysActive: { type: Boolean }
 });
