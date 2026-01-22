@@ -6,10 +6,10 @@ module.exports = {
     },
 
     async execute(interaction, client) {
-        if(!client.previousPannel) {
+        if(client.previousPannel.length == 0) {
             return await interaction.reply({ content: "❌ Impossible de revenir en arrière. Supprimez le message et utilisez **/settings**.", flags: [MessageFlags.Ephemeral] });
         }
         
-        return interaction.update({ components: [client.previousPannel] });
+        return interaction.update({ components: [client.previousPannel.pop()] });
     }
 }

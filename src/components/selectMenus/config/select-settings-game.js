@@ -22,7 +22,9 @@ module.exports = {
         const { configs } = client;
 
         const oldContainer = interaction.message.components[0];
-
+        
+        client.previousPannel.push(oldContainer);
+        
         const backBtn = new ButtonBuilder()
             .setCustomId("btn-back-settings-panel")
             .setLabel("Retour")
