@@ -1,5 +1,6 @@
 const { ContainerBuilder, SeparatorBuilder, SeparatorSpacingSize, TextDisplayBuilder, ButtonBuilder, SectionBuilder, ButtonStyle, ActionRowBuilder } = require("discord.js");
 const { color } = require("../../../../config/config.json");
+const { createChannelSelectMenu } = require("../../../functions/utils/createChannelSelectMenu");
 
 module.exports = {
     data: {
@@ -62,6 +63,25 @@ module.exports = {
             .addSeparatorComponents(separator)
             .addTextDisplayComponents(new TextDisplayBuilder({ content: `**Modifier** ici le nom et le jeu de la configuration, et administrez les salons associés (**création** et **suppression**).` }).setId(1000))
             .addActionRowComponents(new ActionRowBuilder().setId(1001).addComponents(editConfigBtn, createChannel, supprChannelBtn))
+        
+        if (currentConfig.channels.some(({ active, alwaysActive }) => active && !alwaysActive)) {
+            const modifiableChannels = currentConfig.channels.filter(ch => !ch.alwaysActive);
+
+            const selectStatusChannelEnable = createChannelSelectMenu({
+                customId: "select-modif-status-channel-active",
+                placeholder: "✅ Activer des salons",
+                channels: modifiableChannels
+            }).setMaxValues(modifiableChannels.length);
+
+            const selectStatusChannelDisable = createChannelSelectMenu({
+                customId: "select-modif-status-channel-desactive",
+                placeholder: "❌ Désactiver des salons",
+                channels: modifiableChannels
+            }).setMaxValues(modifiableChannels.length);
+            
+            container.addSeparatorComponents(separator);
+            container.addActionRowComponents([new ActionRowBuilder().addComponents(selectStatusChannelEnable), new ActionRowBuilder().addComponents(selectStatusChannelDisable)]);
+        }
         
         const supprConfigContainer = new ContainerBuilder()
             .setAccentColor(parseInt(color.red.replace("#", ""), 16))

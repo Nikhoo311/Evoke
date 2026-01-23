@@ -1,5 +1,4 @@
 const { SectionBuilder, ButtonBuilder, TextDisplayBuilder, SeparatorBuilder, SeparatorSpacingSize, ContainerBuilder, ActionRowBuilder, ActionRow } = require("discord.js");
-const { createChannelSelectMenu } = require("../../../functions/utils/createChannelSelectMenu");
 
 module.exports = {
     data: { name: "edit-config-modal" },
@@ -50,22 +49,8 @@ module.exports = {
             .addActionRowComponents(ActionRowBuilder.from(buttons[1]));
         
         if (currentConfig.channels.some(({ active, alwaysActive }) => active && !alwaysActive)) {
-            const modifiableChannels = currentConfig.channels.filter(ch => !ch.alwaysActive);
-
-            const selectStatusChannelEnable = createChannelSelectMenu({
-                customId: "select-modif-status-channel-active",
-                placeholder: "✅ Activer des salons",
-                channels: modifiableChannels
-            }).setMaxValues(modifiableChannels.length);
-
-            const selectStatusChannelDisable = createChannelSelectMenu({
-                customId: "select-modif-status-channel-desactive",
-                placeholder: "❌ Désactiver des salons",
-                channels: modifiableChannels
-            }).setMaxValues(modifiableChannels.length);
-            
             containerWithChannels.addSeparatorComponents(separator);
-            containerWithChannels.addActionRowComponents([new ActionRowBuilder().addComponents(selectStatusChannelEnable), new ActionRowBuilder().addComponents(selectStatusChannelDisable)]);
+            containerWithChannels.addActionRowComponents([ActionRowBuilder.from(oldContainer1.components[7]), ActionRowBuilder.from(oldContainer1.components[8])]);
         }
         const containerDelete = new ContainerBuilder()
             .setAccentColor(oldContainer2.data.accent_color)
