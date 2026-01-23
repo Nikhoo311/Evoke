@@ -38,7 +38,7 @@ module.exports = {
             .setStyle(ButtonStyle.Secondary);
 
         const saveBtn = new ButtonBuilder()
-            .setCustomId("save-update-config")
+            .setCustomId("btn-save-update-config")
             .setLabel("Enregistrer")
             .setEmoji("💾")
             .setStyle(ButtonStyle.Success)

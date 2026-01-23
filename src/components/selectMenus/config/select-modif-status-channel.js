@@ -9,11 +9,12 @@ module.exports = {
         const id = interaction.message.components[0].data.content.split("-# ")[1];
         const { configs } = client;
         const currentConfig = configs.get(id);
-        const channelName = interaction.values[0];
+        const channelNames = interaction.values;
 
-        const channel = currentConfig.channels.filter(ch => ch.name === channelName)[0];
-
-        channel.active = interaction.customId === "select-modif-status-channel-active";
+        channelNames.map(name => {
+            const channel = currentConfig.channels.find(ch => ch.name === name);
+            channel.active = interaction.customId === "select-modif-status-channel-active";
+        })
 
         const text = currentConfig.channels
             .sort((a, b) => a.name.localeCompare(b.name))
