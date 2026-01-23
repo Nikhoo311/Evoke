@@ -29,7 +29,7 @@ module.exports = {
             .addTextDisplayComponents(new TextDisplayBuilder({ content: `### 🔧 ${currentConfig.name}\nVous trouvez ici la liste des salons de cette configuration.\n\n*Attention les salons avec le 🔒 sont des salons __**obligatoires**__, non modifiable, pour mon bon fonctionnement.*` }))
             .setButtonAccessory(ButtonBuilder.from(oldContainer.components[0].accessory.data));
             
-        const channelsTextDisplay = new TextDisplayBuilder({ content: text });
+        const channelsTextDisplay = new TextDisplayBuilder({ content: text })
 
         const createChannel = new ButtonBuilder()
             .setCustomId("btn-create-config-channel")
@@ -44,7 +44,7 @@ module.exports = {
             .setStyle(ButtonStyle.Success)
 
         const supprChannelBtn = new ButtonBuilder()
-            .setCustomId("btn-suppr-channel")
+            .setCustomId("btn-delete-config-channel")
             .setLabel("Supprimer un salon")
             .setStyle(ButtonStyle.Danger)
             .setEmoji("<:trash:1462294387881935031>")
@@ -70,7 +70,7 @@ module.exports = {
             .addTextDisplayComponents(new TextDisplayBuilder({ content: `**Modifier** ici le nom et le jeu de la configuration, et administrez les salons associés (**création** et **suppression**).` }).setId(1000))
             .addActionRowComponents(new ActionRowBuilder().setId(1001).addComponents(editConfigBtn, saveBtn, createChannel, supprChannelBtn))
         
-        if (currentConfig.channels.some(({ active, alwaysActive }) => active && !alwaysActive)) {
+        if (currentConfig.channels.filter(ch => !ch.alwaysActive).length > 0) {
             const modifiableChannels = currentConfig.channels.filter(ch => !ch.alwaysActive);
 
             const selectStatusChannelEnable = createChannelSelectMenu({
