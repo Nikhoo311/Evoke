@@ -31,7 +31,7 @@ module.exports = {
                 const lockEmoji = ch.alwaysActive ? " 🔒" : "";
                 const statusEmoji = ch.active ? "<:switch_enabled:1462293151610830900>" : "<:switch_disabled:1462293239145959496>"
                 const channelType = ch.type === "text" ? "<:channel:1462295158388429017>" : "<:channel_voice:1463730529663844543>"
-                return `### ${statusEmoji} ${channelType} ${ch.name.trim().replace(/\s+/g, "-")} ${lockEmoji}`;
+                return `### ${statusEmoji} ${channelType} ${ch.type === "text" ? ch.name.trim().replace(/\s+/g, "-") : ch.name.trim()} ${lockEmoji}`;
             })
             .join("\n")
         const channelsTextDisplay = new TextDisplayBuilder({ content: text });
