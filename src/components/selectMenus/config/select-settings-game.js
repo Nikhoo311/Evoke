@@ -82,6 +82,7 @@ module.exports = {
                 return new StringSelectMenuOptionBuilder()
                     .setLabel(config.name)
                     .setValue(config._id.toString())
+                    .setEmoji("🔧")
                     .setDescription(`Créer le ${dayjs(config.createdAt).format("D MMMM YYYY à HH:mm")}`)
             }))
         const selectRow2 = new ActionRowBuilder().addComponents(selectConfig);
