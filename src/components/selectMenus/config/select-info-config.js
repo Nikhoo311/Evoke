@@ -6,7 +6,6 @@ module.exports = {
         name: "select-info-config"
     },
     async execute(interaction, client) {
-        // ajouter un bouton pour modifier le nom de la configuration + jeu
         const { configs } = client;
         const currentConfig = configs.get(interaction.values[0]);
 
