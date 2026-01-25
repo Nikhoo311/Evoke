@@ -30,7 +30,7 @@ class RiotProfileManager extends BaseManager {
    */
   async registerPlayer(discordId, riotId) {
     try {
-      const existingPlayer = await RiotProfileManager.model.findOne({ discordId });
+      const existingPlayer = this.cache.get(discordId);
       if (existingPlayer) {
         throw new UserError('Ce compte Discord est déjà enregistré.');
       }
@@ -151,6 +151,7 @@ class RiotProfileManager extends BaseManager {
     );
 
     if (!player) throw new Error('Joueur non trouvé');
+    this.cache.set(discordId, player);
 
     return {
       discordId: player.discordId,
@@ -166,7 +167,7 @@ class RiotProfileManager extends BaseManager {
    * Vérifie si un joueur est disponible
    */
   async isAvailable(discordId) {
-    const player = await RiotProfileManager.model.findOne({ discordId });
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
     
     return player.availability === 'AVAILABLE';
@@ -285,7 +286,7 @@ class RiotProfileManager extends BaseManager {
       throw new UserError(`Type de sanction invalide. Utilisez: ${validTypes.join(', ')}`);
     }
 
-    const player = await RiotProfileManager.model.findOne({ discordId });
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
 
     player.judiciary.history.push({ 
@@ -336,7 +337,7 @@ class RiotProfileManager extends BaseManager {
    */
   async updatePlayerData(discordId) {
     try {
-      const player = await RiotProfileManager.model.findOne({ discordId });
+      const player = this.cache.get(discordId);
       if (!player) throw new Error('Joueur non trouvé');
 
       const summonerData = await this.fetchSummonerByPuuid(player.puuid);
@@ -359,6 +360,7 @@ class RiotProfileManager extends BaseManager {
       player.stats.kdaAverage = kdaAverage;
 
       await player.save();
+      this.cache.set(discordId, player);
       return player;
 
     } catch (error) {
