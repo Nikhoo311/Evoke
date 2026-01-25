@@ -76,12 +76,13 @@ class RiotProfileManager extends BaseManager {
       });
 
       await newPlayer.save();
+      this.cache.set(discordId, newPlayer);
       return newPlayer;
 
     } catch (error) {
       if (error.isUserError) throw error;
-      console.error('Erreur lors de l\'enregistrement:', error);
-      throw error;
+        console.error('Erreur lors de l\'enregistrement:', error);
+        throw error;
     }
   }
 
@@ -92,7 +93,7 @@ class RiotProfileManager extends BaseManager {
    * Retourne: Rang, Coût, Poste préféré, KDA moyen, Winrate, Casier judiciaire, Champion Pool
    */
   async getPlayerProfile(discordId) {
-    const player = await RiotProfileManager.model.findOne({ discordId });
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
 
     return {
