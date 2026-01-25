@@ -1,11 +1,13 @@
 const axios = require('axios');
 const player = require('../schemas/player');
 const UserError = require('./ErrorUser');
+const BaseManager = require('./BaseManager');
 
-class RiotProfileManager {
+class RiotProfileManager extends BaseManager {
   static model = player;
   
   constructor(riotApiKey, region = 'europe') {
+    super(RiotProfileManager.model)
     this.apiKey = riotApiKey;
     this.region = region;
     this.platformRouting = {
@@ -17,6 +19,10 @@ class RiotProfileManager {
     
     this.accountUrl = `https://${region}.api.riotgames.com`;
     this.summonerUrl = `https://${this.platform}.api.riotgames.com`;
+  }
+
+  async init() {
+    await this.fillCache("discordId");
   }
 
   /**

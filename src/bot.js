@@ -11,6 +11,9 @@ client.buttons = new Collection();
 client.selectMenus = new Collection();
 client.modals = new Collection();
 client.manager = new RiotProfileManager(RIOT_API_KEY, "europe");
+(async () => {
+    await client.manager.init();
+})();
 client.configs = new Collection();
 client.commandArray = []
 
