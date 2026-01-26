@@ -8,7 +8,7 @@ module.exports = {
         const modal = new ModalBuilder()
             .setCustomId('register-modal')
             .setTitle('📜 Inscription à la Ligue');
-
+ 
         // Champ pour le Riot ID
         const riotIdInput = new TextInputBuilder()
             .setCustomId('riot_id_input')
