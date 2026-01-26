@@ -2,7 +2,7 @@ const { MessageFlags } = require('discord.js');
 
 module.exports = {
     data: {
-        name: "register_modal"
+        name: "register-modal"
     },
     async execute(interaction, client) {
         const riotPseudo = interaction.fields.getTextInputValue("riot_id_input");

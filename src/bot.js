@@ -16,6 +16,7 @@ client.manager = new RiotProfileManager(RIOT_API_KEY, "europe");
 })();
 client.configs = new Collection();
 client.commandArray = []
+client.previousPannel = [];
 
 let functionFolder = readdirSync(`./src/functions`);
 functionFolder = functionFolder.filter(f => f !== "utils");

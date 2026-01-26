@@ -1,4 +1,4 @@
-const { ActionRowBuilder, TextInputStyle, ModalBuilder, TextInputBuilder, LabelBuilder } = require("discord.js");
+const { TextInputStyle, ModalBuilder, TextInputBuilder, LabelBuilder } = require("discord.js");
 
 module.exports = {
     data: {
@@ -6,8 +6,8 @@ module.exports = {
     },
     async execute (interaction, client) {
         const modal = new ModalBuilder()
-        .setCustomId('register_modal')
-        .setTitle('📜 Inscription à la Ligue');
+            .setCustomId('register-modal')
+            .setTitle('📜 Inscription à la Ligue');
 
         // Champ pour le Riot ID
         const riotIdInput = new TextInputBuilder()

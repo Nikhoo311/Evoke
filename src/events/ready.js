@@ -1,5 +1,6 @@
 const { ActivityType } = require("discord.js");
 const logger = require("../functions/utils/Logger");
+const ConfigModel = require("../schemas/config");
 
 module.exports = {
     name: "clientReady",
@@ -27,6 +28,9 @@ module.exports = {
         } catch (error) {
             console.error(error);
         }
+        const configs = await ConfigModel.find();
+        configs.map(config => client.configs.set(config._id.toString(), config));
+
         logger.clientStart(`${client.user.tag} est en ligne !`)
     }
 }
