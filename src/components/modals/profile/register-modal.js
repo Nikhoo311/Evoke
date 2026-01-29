@@ -13,6 +13,7 @@ module.exports = {
             return await interaction.editReply({ content: `✅ Votre compte \`${riotPseudo}\` a bien été enregistré.` });
             
         } catch (error) {
+            console.log(error);
             const message = error.isUserError ? `${error.message}` : '⚠️ Une erreur interne est survenue. Contactez un administrateur.';
             return await interaction.editReply({ content: `❌ ${message}` });
         }

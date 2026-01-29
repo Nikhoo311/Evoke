@@ -1,22 +1,24 @@
 const axios = require('axios');
 const player = require('../schemas/player');
 const UserError = require('./ErrorUser');
+const BaseManager = require('./BaseManager');
 
-class RiotProfileManager {
+class RiotProfileManager extends BaseManager {
   static model = player;
   
   constructor(riotApiKey, region = 'europe') {
+    super(RiotProfileManager.model)
     this.apiKey = riotApiKey;
     this.region = region;
-    this.platformRouting = {
-      'europe': 'euw1',
-      'americas': 'na1',
-      'asia': 'kr'
-    };
+    this.platformRouting = { 'europe': 'euw1', 'americas': 'na1', 'asia': 'kr' };
     this.platform = this.platformRouting[region] || 'euw1';
     
     this.accountUrl = `https://${region}.api.riotgames.com`;
     this.summonerUrl = `https://${this.platform}.api.riotgames.com`;
+  }
+
+  async init() {
+    await this.fillCache("discordId");
   }
 
   /**
@@ -24,7 +26,7 @@ class RiotProfileManager {
    */
   async registerPlayer(discordId, riotId) {
     try {
-      const existingPlayer = await RiotProfileManager.model.findOne({ discordId });
+      const existingPlayer = this.cache.get(discordId);
       if (existingPlayer) {
         throw new UserError('Ce compte Discord est déjà enregistré.');
       }
@@ -70,12 +72,13 @@ class RiotProfileManager {
       });
 
       await newPlayer.save();
+      this.cache.set(discordId, newPlayer);
       return newPlayer;
 
     } catch (error) {
       if (error.isUserError) throw error;
-      console.error('Erreur lors de l\'enregistrement:', error);
-      throw error;
+        console.error('Erreur lors de l\'enregistrement:', error);
+        throw error;
     }
   }
 
@@ -85,8 +88,8 @@ class RiotProfileManager {
    * Récupère la carte d'identité complète d'un joueur
    * Retourne: Rang, Coût, Poste préféré, KDA moyen, Winrate, Casier judiciaire, Champion Pool
    */
-  async getPlayerProfile(discordId) {
-    const player = await RiotProfileManager.model.findOne({ discordId });
+  getPlayerProfile(discordId) {
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
 
     return {
@@ -135,15 +138,13 @@ class RiotProfileManager {
    * Met à jour la disponibilité d'un joueur pour les 6 semaines de tournoi
    */
   async setAvailability(discordId, available) {
-    const status = available ? 'AVAILABLE' : 'UNAVAILABLE';
-    
-    const player = await RiotProfileManager.model.findOneAndUpdate(
-      { discordId },
-      { availability: status },
-      { new: true }
-    );
-
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
+
+    const status = available ? 'AVAILABLE' : 'UNAVAILABLE';
+    player.availability = status;
+    
+    await player.save();
 
     return {
       discordId: player.discordId,
@@ -158,8 +159,8 @@ class RiotProfileManager {
   /**
    * Vérifie si un joueur est disponible
    */
-  async isAvailable(discordId) {
-    const player = await RiotProfileManager.model.findOne({ discordId });
+  isAvailable(discordId) {
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
     
     return player.availability === 'AVAILABLE';
@@ -171,10 +172,8 @@ class RiotProfileManager {
    * Affiche la liste des joueurs disponibles pour la Draft
    * Triée par poste et par prix
    */
-  async getMarket() {
-    const players = await RiotProfileManager.model.find({ 
-      availability: 'AVAILABLE' 
-    }).select('discordId gameName tier rank pointValue preferredRole stats.winrate stats.kdaAverage championPool');
+  getMarket() {
+    const players = this.cache.filter(player => player.availability === 'AVAILABLE');
 
     // Grouper par rôle
     const market = {
@@ -213,19 +212,16 @@ class RiotProfileManager {
   /**
    * Récupère les joueurs disponibles par rôle spécifique
    */
-  async getPlayersByRole(role) {
+  getPlayersByRole(role) {
     const validRoles = ['TOP', 'JUNGLE', 'MID', 'ADC', 'SUPPORT', 'FILL'];
     
     if (!validRoles.includes(role)) {
       throw new Error(`Rôle invalide. Utilisez: ${validRoles.join(', ')}`);
     }
 
-    const players = await RiotProfileManager.model.find({ 
-      availability: 'AVAILABLE',
-      preferredRole: role 
-    })
-    .select('discordId gameName tier rank pointValue preferredRole stats.winrate stats.kdaAverage championPool')
-    .sort({ pointValue: -1 });
+    const players = this.cache
+      .filter(p => p.availability === 'AVAILABLE' && p.preferredRole === role)
+      .sort((a, b) => b.pointValue - a.pointValue);
 
     return players.map(p => ({
       discordId: p.discordId,
@@ -244,13 +240,14 @@ class RiotProfileManager {
   /**
    * Récupère les joueurs par fourchette de prix
    */
-  async getPlayersByPointRange(minPoints, maxPoints) {
-    const players = await RiotProfileManager.model.find({
-      availability: 'AVAILABLE',
-      pointValue: { $gte: minPoints, $lte: maxPoints }
-    })
-    .select('discordId gameName tier rank pointValue preferredRole stats.winrate stats.kdaAverage championPool')
-    .sort({ pointValue: -1 });
+  getPlayersByPointRange(minPoints, maxPoints) {
+    const players = this.cache
+      .filter(p => 
+        p.availability === 'AVAILABLE' && 
+        p.pointValue >= minPoints && 
+        p.pointValue <= maxPoints
+      )
+      .sort((a, b) => b.pointValue - a.pointValue);
 
     return players.map(p => ({
       discordId: p.discordId,
@@ -278,7 +275,7 @@ class RiotProfileManager {
       throw new UserError(`Type de sanction invalide. Utilisez: ${validTypes.join(', ')}`);
     }
 
-    const player = await RiotProfileManager.model.findOne({ discordId });
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
 
     player.judiciary.history.push({ 
@@ -309,13 +306,11 @@ class RiotProfileManager {
    * Attribue un MVP à un joueur
    */
   async awardMVP(discordId) {
-    const player = await RiotProfileManager.model.findOneAndUpdate(
-      { discordId },
-      { $inc: { mvpCount: 1 } },
-      { new: true }
-    );
-
+    const player = this.cache.get(discordId);
     if (!player) throw new Error('Joueur non trouvé');
+
+    player.mvpCount += 1;
+    await player.save();
 
     return {
       discordId: player.discordId,
@@ -329,7 +324,7 @@ class RiotProfileManager {
    */
   async updatePlayerData(discordId) {
     try {
-      const player = await RiotProfileManager.model.findOne({ discordId });
+      const player = this.cache.get(discordId);
       if (!player) throw new Error('Joueur non trouvé');
 
       const summonerData = await this.fetchSummonerByPuuid(player.puuid);
