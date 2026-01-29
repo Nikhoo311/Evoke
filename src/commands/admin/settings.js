@@ -58,6 +58,12 @@ module.exports = {
             .setStyle(ButtonStyle.Success)
             .setEmoji("➕")
 
+        const chooseConfigBtn = new ButtonBuilder()
+            .setCustomId("btn-choose-config")
+            .setLabel("Choisir")
+            .setStyle(ButtonStyle.Primary)
+            .setEmoji("📌")
+
         const supprConfigBtn = new ButtonBuilder()
             .setCustomId("btn-suppr-config")
             .setLabel("Supprimer")
@@ -73,8 +79,8 @@ module.exports = {
             container.addActionRowComponents(new ActionRowBuilder().addComponents(selectSettingsGame)).addSeparatorComponents(separator);
         }
 
-        container.addTextDisplayComponents(new TextDisplayBuilder({content: `Cet espace est dédié à la **création** et **suppression** des différentes configurations.`}));
-        container.addActionRowComponents(new ActionRowBuilder().addComponents(creationConfigBtn, supprConfigBtn))
+        container.addTextDisplayComponents(new TextDisplayBuilder({content: `Cet espace est dédié au **choix**, à la **création** et **suppression** des différentes configurations.`}));
+        container.addActionRowComponents(new ActionRowBuilder().addComponents(chooseConfigBtn, creationConfigBtn, supprConfigBtn))
         
         client.previousPannel.push(container);
 
