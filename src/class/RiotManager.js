@@ -90,7 +90,7 @@ class RiotProfileManager extends BaseManager {
    */
   getPlayerProfile(discordId) {
     const player = this.cache.get(discordId);
-    if (!player) throw new Error('Joueur non trouvé');
+    if (!player) throw new UserError('Joueur non trouvé');
 
     return {
       discordId: player.discordId,
@@ -139,7 +139,7 @@ class RiotProfileManager extends BaseManager {
    */
   async setAvailability(discordId, available) {
     const player = this.cache.get(discordId);
-    if (!player) throw new Error('Joueur non trouvé');
+    if (!player) throw new UserError('Joueur non trouvé');
 
     const status = available ? 'AVAILABLE' : 'UNAVAILABLE';
     player.availability = status;
@@ -161,7 +161,7 @@ class RiotProfileManager extends BaseManager {
    */
   isAvailable(discordId) {
     const player = this.cache.get(discordId);
-    if (!player) throw new Error('Joueur non trouvé');
+    if (!player) throw new UserError('Joueur non trouvé');
     
     return player.availability === 'AVAILABLE';
   }
@@ -276,7 +276,7 @@ class RiotProfileManager extends BaseManager {
     }
 
     const player = this.cache.get(discordId);
-    if (!player) throw new Error('Joueur non trouvé');
+    if (!player) throw new UserError('Joueur non trouvé');
 
     player.judiciary.history.push({ 
       type, 
@@ -307,7 +307,7 @@ class RiotProfileManager extends BaseManager {
    */
   async awardMVP(discordId) {
     const player = this.cache.get(discordId);
-    if (!player) throw new Error('Joueur non trouvé');
+    if (!player) throw new UserError('Joueur non trouvé');
 
     player.mvpCount += 1;
     await player.save();
@@ -325,7 +325,7 @@ class RiotProfileManager extends BaseManager {
   async updatePlayerData(discordId) {
     try {
       const player = this.cache.get(discordId);
-      if (!player) throw new Error('Joueur non trouvé');
+      if (!player) throw new UserError('Joueur non trouvé');
 
       const summonerData = await this.fetchSummonerByPuuid(player.puuid);
       const rankedData = await this.fetchRankedStats(summonerData.puuid);
