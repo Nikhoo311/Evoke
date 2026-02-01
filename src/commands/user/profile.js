@@ -44,13 +44,23 @@ module.exports = {
                 .setFooter({ text: `Discord ID : ${profile.discordId}` })
                 .setTimestamp();
 
+            const availabilityBtn = new ButtonBuilder()
+                .setCustomId("btn-set-avability")
+                .setLabel(`Se mettre ${profile.availability === "AVAILABLE" ? "indisponible" : "disponible"}`)
+                .setStyle(profile.availability === "AVAILABLE" ? ButtonStyle.Danger : ButtonStyle.Success)
+
             const opGgLink = new ButtonBuilder()
                 .setLabel("Profil op.gg")
                 .setEmoji("<:orangesite:1465283796843757693>")
                 .setStyle(ButtonStyle.Link)
                 .setURL(`https://op.gg/lol/summoners/euw/${profile.riotId.replace("#", "-")}`)
 
-            return await interaction.reply({ embeds: [embed], components: [new ActionRowBuilder().addComponents(opGgLink)], flags: [MessageFlags.Ephemeral]})
+            const actionRow = new ActionRowBuilder().addComponents(opGgLink);
+            if (user.id === interaction.user.id) {
+                actionRow.addComponents(availabilityBtn);
+            }
+
+            return await interaction.reply({ embeds: [embed], components: [actionRow], flags: [MessageFlags.Ephemeral]})
         } catch (error) {
             return interaction.reply({ content: `❌ ${error.message}`, flags: [MessageFlags.Ephemeral] });
         }
