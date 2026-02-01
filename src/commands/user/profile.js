@@ -3,7 +3,7 @@ const { color } = require("../../../config/config.json");
 
 module.exports = {
     name: "profil",
-    categorie: "Administation",
+    categorie: "Joueur",
     active: true,
     data: new SlashCommandBuilder()
         .setName("profil")

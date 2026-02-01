@@ -151,8 +151,8 @@ class RiotProfileManager extends BaseManager {
       gameName: player.gameName,
       availability: player.availability,
       message: available 
-        ? `${player.gameName} est maintenant disponible pour la draft`
-        : `${player.gameName} s'est retiré du marché`
+        ? `Vous êtes maintenant disponible pour la draft`
+        : `Vous êtes retiré du marché`
     };
   }
 
