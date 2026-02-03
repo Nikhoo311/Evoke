@@ -14,6 +14,8 @@ module.exports = {
 
     async execute(interaction, client) {
         const user = interaction.options.getUser("joueur") || interaction.user;
+        if (user.bot) return await interaction.reply({ content: `❌ <@${user.id}> est un bot... les bots **ne peuvent pas** avoir de profil joueur.`, flags: [MessageFlags.Ephemeral] });
+        
         const rankEmojis =  {
             'IRON': "<:iron:1466876271073169530>", 'BRONZE': "", 'SILVER': "<:silver:1466876965113037025>", 'GOLD': "<:gold:1466876296293519622>",
             'PLATINUM': "<:platine:1466876863501570201>", 'EMERALD': "<:emeraude:1466876576821149908>", 'DIAMOND': "<:diamant:1466876173572378827>",
