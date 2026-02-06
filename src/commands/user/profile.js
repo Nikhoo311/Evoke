@@ -34,12 +34,12 @@ module.exports = {
                     { name: "⭐ LP", value: `${profile.leaguePoints} LP`, inline: true },
                     { name: "🎯 Rôle préféré", value: profile.preferredRole, inline: true },
                     { name: "💰 Valeur en points", value: `${profile.pointValue} pts`, inline: true },
-                    { name: "KDA moyen", value: `${profile.stats.kdaAverage}`, inline: true },
-                    { name: "Poucentage de parties gagnées", value: `${profile.stats.winrate} %`, inline: true },
-                    { name: "Nombre de parties jouer", value: `${profile.stats.gamesPlayed}`, inline: true },
+                    { name: "KDA", value: `${profile.stats.kdaAverage}`, inline: true },
+                    { name: "Winrate", value: `${profile.stats.winrate} %`, inline: true },
+                    { name: "Nombre de games", value: `${profile.stats.gamesPlayed}`, inline: true },
                     { name: "Wins", value: `${profile.stats.wins}`, inline: true },
                     { name: "Losses", value: `${profile.stats.losses}`, inline: true },
-                    { name: "MVP", value: `${profile.mvpCount}`, inline: true },
+                    { name: "\u200b", value: "\u200b", inline: true },
                     { name: "\u200b", value: "\u200b", inline: true },
                     { name: "Statut", value: `${profile.availability === "AVAILABLE" ? "🟩 Disponible" : "🟥 Indisponible"}`, inline: true},
                 )
@@ -55,7 +55,7 @@ module.exports = {
                 .setLabel("Profil op.gg")
                 .setEmoji("<:orangesite:1465283796843757693>")
                 .setStyle(ButtonStyle.Link)
-                .setURL(`https://op.gg/lol/summoners/euw/${profile.riotId.replace("#", "-")}`)
+                .setURL(`https://op.gg/lol/summoners/euw/${encodeURIComponent(profile.riotId.replace("#", "-"))}`)
 
             const actionRow = new ActionRowBuilder().addComponents(opGgLink);
             if (user.id === interaction.user.id) {
