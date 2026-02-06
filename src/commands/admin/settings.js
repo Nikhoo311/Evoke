@@ -84,6 +84,6 @@ module.exports = {
         
         client.previousPannel.push(container);
 
-        return interaction.reply({ components: [container], flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2] })
+        return await interaction.reply({ components: [container], flags: [MessageFlags.Ephemeral, MessageFlags.IsComponentsV2] })
     }
 }

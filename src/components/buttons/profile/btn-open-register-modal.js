@@ -2,7 +2,7 @@ const { TextInputStyle, ModalBuilder, TextInputBuilder, LabelBuilder } = require
 
 module.exports = {
     data: {
-        name: "btn_open_register_modal"
+        name: "btn-open-register-modal"
     },
     async execute (interaction, client) {
         const modal = new ModalBuilder()

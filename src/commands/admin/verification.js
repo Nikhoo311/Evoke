@@ -37,7 +37,7 @@ module.exports = {
             .setTimestamp();
 
         const registerButton = new ButtonBuilder()
-            .setCustomId('btn_open_register_modal')
+            .setCustomId('btn-open-register-modal')
             .setLabel('S\'inscrire maintenant')
             .setStyle(ButtonStyle.Success)
             .setEmoji('⚔️');
