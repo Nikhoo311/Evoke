@@ -40,32 +40,31 @@ class RiotProfileManager extends BaseManager {
         const riotData = await this.fetchRiotAccount(gameName, tagLine);
         const summonerData = await this.fetchSummonerByPuuid(riotData.puuid);
         const rankedData = await this.fetchRankedStats(summonerData.puuid);
-        
-        // Calculer le coût
+
         const pointValue = this.calculatePointValue(rankedData.tier);
         const playerData = await this.calculateChampionPoolRoleAndKDA(riotData.puuid, 10);
 
         const newPlayer = new RiotProfileManager.model({
-        discordId,
-        riotId: `${gameName}#${tagLine}`,
-        gameName,
-        tagLine,
-        puuid: riotData.puuid,
-        summonerId: summonerData.id,
-        accountId: summonerData.accountId,
-        tier: rankedData.tier || 'UNRANKED',
-        rank: rankedData.rank || '',
-        leaguePoints: rankedData.leaguePoints || 0,
-        pointValue,
-        preferredRole: playerData.preferredRole, // Au lieu de detectPreferredRole
-        stats: {
-            wins: rankedData.wins || 0,
-            losses: rankedData.losses || 0,
-            gamesPlayed: (rankedData.wins || 0) + (rankedData.losses || 0),
-            winrate: this.calculateWinrate(rankedData.wins, rankedData.losses),
-            kdaAverage: playerData.kdaAverage // Au lieu de calculateChampionPoolAndKDA
-        },
-        championPool: playerData.championPool // Au lieu de calculateChampionPoolAndKDA
+            discordId,
+            riotId: `${gameName}#${tagLine}`,
+            gameName,
+            tagLine,
+            puuid: riotData.puuid,
+            summonerId: summonerData.id,
+            accountId: summonerData.accountId,
+            tier: rankedData.tier || 'UNRANKED',
+            rank: rankedData.rank || '',
+            leaguePoints: rankedData.leaguePoints || 0,
+            pointValue,
+            preferredRole: playerData.preferredRole,
+            stats: {
+                wins: rankedData.wins || 0,
+                losses: rankedData.losses || 0,
+                gamesPlayed: (rankedData.wins || 0) + (rankedData.losses || 0),
+                winrate: this.calculateWinrate(rankedData.wins, rankedData.losses),
+                kdaAverage: playerData.kdaAverage
+            },
+            championPool: playerData.championPool
         });
 
         await newPlayer.save();
