@@ -144,7 +144,8 @@ class RiotProfileManager extends BaseManager {
     const status = available ? 'AVAILABLE' : 'UNAVAILABLE';
     player.availability = status;
     
-    await player.save();
+    // await player.save();
+    this.markDirty(discordId);
 
     return {
       discordId: player.discordId,
@@ -291,7 +292,8 @@ class RiotProfileManager extends BaseManager {
       player.judiciary.suspensions += 1;
     }
 
-    await player.save();
+    // await player.save();
+    this.markDirty(discordId);
     
     return {
       discordId: player.discordId,
@@ -310,7 +312,8 @@ class RiotProfileManager extends BaseManager {
     if (!player) throw new Error('Joueur non trouvé');
 
     player.mvpCount += 1;
-    await player.save();
+    // await player.save();
+    this.markDirty(discordId);
 
     return {
       discordId: player.discordId,
@@ -346,7 +349,8 @@ class RiotProfileManager extends BaseManager {
       player.championPool = championPool;
       player.stats.kdaAverage = kdaAverage;
 
-      await player.save();
+      // await player.save();
+      this.markDirty(discordId);
       return player;
 
     } catch (error) {
@@ -406,7 +410,7 @@ class RiotProfileManager extends BaseManager {
           }
           championStats[champId].totalKDA += kda;
 
-          await this.sleep(100);
+          await this.sleep(600);
         } catch (error) {
           console.error(`Erreur pour le match ${matchId}:`, error.message);
         }
@@ -527,7 +531,7 @@ class RiotProfileManager extends BaseManager {
           case 'UTILITY': roleCount.SUPPORT++; break;
         }
         
-        await this.sleep(100);
+        await this.sleep(600);
       } catch (error) {
         console.error(`Erreur détection rôle pour match ${matchId}:`, error.message);
       }
